@@ -1,0 +1,12 @@
+my_snowflake_profile:
+  target: prod
+  outputs:
+    prod:
+      type: snowflake
+      account: CONCORD.QGB86541       # e.g., xy12345.us-west-2
+      user: BSIMONSEN
+      role: SYSAD,OM
+      database: RAW
+      warehouse: COMPUTE_WH
+      schema: PUBLIC
+      authenticator: snowflake
