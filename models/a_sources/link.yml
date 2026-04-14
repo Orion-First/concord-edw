@@ -1,0 +1,240 @@
+version: 2
+
+sources:
+  - name: LINK
+    description: Link Data
+    database: RAW
+    schema: LINK
+    tables: 
+      - name: OBLIGATIONS
+        identifier: "OBLIGATIONS"
+        description: 'The central table. Each row is a loan or dues account being serviced.'
+
+      - name: OBLIGORS
+        identifier: "OBLIGORS"
+        description: 'Borrower/guarantor records. Contact details are stored in separate child tables (OBLIGORADDRESSES, OBLIGOREMAILADDRESSES, OBLIGORPHONENUMBERS).'
+
+      - name: OBLIGATIONS
+        identifier: "OBLIGATIONS"
+        description: 'Many-to-many bridge between obligors and obligations. A single obligation can have multiple obligors (primary borrower, co-borrower, guarantor), and an obligor can be linked to multiple obligations.'
+
+      - name: OBLIGORADDRESSES
+        identifier: "OBLIGORADDRESSES"
+        description: 'Mailing addresses for obligors. One-to-many from OBLIGORS. Supports multiple addresses with notification preferences.'
+
+      - name: OBLIGOREMAILADDRESSES
+        identifier: "OBLIGOREMAILADDRESSES"
+        description: 'Email addresses for obligors. One-to-many from OBLIGORS. Same notification preference structure as addresses.'
+
+      - name: OBLIGORPHONENUMBERS
+        identifier: "OBLIGORPHONENUMBERS"
+        description: 'Phone numbers for obligors. One-to-many from OBLIGORS. Same notification preference structure.'
+
+      - name: OBLIGORLOGINS
+        identifier: "OBLIGORLOGINS"
+        description: 'Portal login accounts for obligors (separate from internal USERS). Tracks authentication state for the borrower self-service portal.'
+
+      - name: PAYMENTS
+        identifier: "PAYMENTS"
+        description: 'Individual payment transactions with full lifecycle tracking. Supports ACH, check, and credit card payment methods with method-specific detail columns.'
+
+      - name: JOURNALS
+        identifier: "JOURNALS"
+        description: 'Individual ledger entries posted against obligation ledger accounts. Each journal records a debit or credit to a specific ledger. There can be multiple journals created for a single transaction activity.'
+
+      - name: LEDGERS
+        identifier: "LEDGERS"
+        description: 'Chart of accounts per obligation. Each obligation has one or more ledgers for different ledger types: Balance, Charges, Interest, Installment). Tracks running balances and payment accumulations. Ledgers are configured on the Product. Ledgers have associated Journals.'
+
+      - name: PAIDJOURNALS
+        identifier: "PAIDJOURNALS"
+        description: 'Many-to-many bridge tracking how payment journal entries are applied to outstanding journal entries. Records which journals paid which other journals and by how much.'
+
+      - name: ACTIVITIES
+        identifier: "ACTIVITIES"
+        description: 'Insert-only audit log capturing all system events. This is one of the largest and most important tables — it records every action taken on an obligation, obligor, or other object in the system.'
+
+      - name: CLIENTS
+        identifier: "CLIENTS"
+        description: "Tenant configuration. Each client is a company that uses Concord's servicing platform."
+
+      - name: CLIENTPORTALS
+        identifier: "CLIENTPORTALS"
+        description: "Portal configuration for each client's borrower self-service portal. One-to-one with CLIENTS; portal settings were extracted from CLIENTS into this table."
+
+      - name: PRODUCTS
+        identifier: "PRODUCTS"
+        description: 'Loan product type definitions. Each product defines the accounting and fee rules for a class of obligations.'
+
+      - name: PRODUCTFEES
+        identifier: "PRODUCTFEES"
+        description: 'Fee schedule entries per product. Many-to-one from PRODUCTS. Defines the fees charged for specific payment channels/methods.'
+
+      - name: LENDERS
+        identifier: "LENDERS"
+        description: 'Entities that receive payments (originators, investors, banks).'
+
+      - name: LENDERBANKSUBSCRIPTIONS
+        identifier: "LENDERBANKSUBSCRIPTIONS"
+        description: 'Many-to-many bridge linking lenders to their bank accounts with a subscription type (e.g. which bank to use for which purpose).'
+
+      - name: PROJECTS
+        identifier: "PROJECTS"
+        description: 'Groupings of obligations within a client for portfolio management.'
+
+      - name: BANKS
+        identifier: "BANKS"
+        description: 'Reference data for ACH bank routing. Not client-specific.'
+
+      - name: OBLIGATIONSTATUSES
+        identifier: "OBLIGATIONSTATUSES"
+        description: 'Client-defined status code lookup. Each client defines their own set of status codes with categories and behaviors. Drives the STATUS field on OBLIGATIONS.'
+
+      - name: AUTOPAYMENTS
+        identifier: "AUTOPAYMENTS"
+        description: 'Recurring payment schedule configuration. Links an obligation to a saved payment method with scheduling rules.'
+
+      - name: AUTPAYMENTEXECUTIONS
+        identifier: "AUTPAYMENTEXECUTIONS"
+        description: 'Batch execution history for autopayment processing runs. Tracks how many payments were processed, completed, skipped, or errored per run.'
+
+      - name: CREDITCARDS
+        identifier: "CREDITCARDS"
+        description: "Saved credit card records for obligors. Tokenized — no full card numbers stored."
+
+      - name: ACHFILES
+        identifier: "ACHFILES"
+        description: 'Batch ACH files generated for bank submission. Each file contains multiple entries.'
+
+      - name: ACHFILEENTRIES
+        identifier: "ACHFILEENTRIES"
+        description: 'Individual entries within an ACH batch file. Each entry is a single ACH transaction (debit or credit).'
+
+      - name: ACHRETURNS
+        identifier: "ACHRETURNS"
+        description: 'Returned ACH batch files received from banks. Each return contains multiple return records.'
+
+      - name: ACHRETURNRECORDS
+        identifier: "ACHRETURNRECORDS"
+        description: 'Individual returned ACH transactions within a return file.'
+
+      - name: ACHTRANSFERS
+        identifier: "ACHTRANSFERS"
+        description: 'ACH transfer records tracking the movement of funds between bank accounts.'
+
+      - name: BAIIMPORTS
+        identifier: "BAIIMPORTS"
+        description: 'Bank Automated Interface file imports. BAI files contain bank statement data for reconciliation.'
+
+      - name: EBOXIMPORTS
+        identifier: "EBOXIMPORTS"
+        description: 'Electronic lockbox import batches. Electronic payments received via lockbox service.'
+
+      - name: EBOXIMPORTRECORDS
+        identifier: "EBOXIMPORTRECORDS"
+        description: 'Individual records within electronic lockbox imports.'
+
+      - name: LOCKBOXIMPORTS
+        identifier: "LOCKBOXIMPORTS"
+        description: 'Physical lockbox import batches. Check payments received via lockbox service. Same structure as EBOXIMPORTS.'
+
+      - name: DOCUMENTS
+        identifier: "DOCUMENTS"
+        description: 'Document records linked to obligations. Tracks both digital and physical copies of statements, letters, and other correspondence.'
+
+      - name: DOCUMENTTEMPLATES
+        identifier: "DOCUMENTTEMPLATES"
+        description: 'Template definitions for document generation. Defines the structure and type of each document template.'
+
+      - name: DOCUMENTPAGETEMPLATES
+        identifier: "DOCUMENTPAGETEMPLATES"
+        description: 'Bridge linking document templates to page templates, defining multi-page document assembly.'
+
+      - name: OBLIGATIONMESSAGES
+        identifier: "OBLIGATIONMESSAGES"
+        description: 'Messages generated and sent for obligations — statements, collection letters, notices, etc. Tracks delivery status and method.'
+
+      - name: OBLIGATIONMESSAGEATTACHMENTS
+        identifier: "OBLIGATIONMESSAGEATTACHMENTS"
+        description: 'Bridge linking documents to messages (which documents were attached to which messages).'
+
+      - name: DATADEFINITIONS
+        identifier: "DATADEFINITIONS"
+        description: 'Client-defined custom field definitions. Each definition describes a custom field that can be attached to obligations, lenders, or other entities.'
+
+      - name: DATAVALUES
+        identifier: "DATAVALUES"
+        description: 'Actual values for custom fields. Each row stores one custom field value for one entity.'
+
+      - name: DATASOURCES
+        identifier: "DATASOURCES"
+        description: 'Configured external data source connections (SFTP, S3, etc.) for automated data exchange.'
+
+      - name: DATAIMPORTDEFINITIONS
+        identifier: "DATAIMPORTDEFINITIONS"
+        description: 'Import job definitions specifying how to map external data into Link.'
+
+      - name: DATAIMPORTS
+        identifier: "DATAIMPORTS"
+        description: 'Individual import execution records.'
+
+      - name: DATAEXPORTDEFINITIONS
+        identifier: "DATAEXPORTDEFINITIONS"
+        description: 'Export job definitions specifying how to extract data from Link.'
+
+      - name: DATAEXPORTS
+        identifier: "DATAEXPORTS"
+        description: 'Individual export execution records.'
+
+      - name: DATAEXPORTDEFINITIONOVERRIDES
+        identifier: "DATAEXPORTDEFINITIONOVERRIDES"
+        description: 'Per-product overrides for export job definitions. Allows a product to override the schedule, data source, or notification settings of a shared export definition.'
+
+      - name: DATAIMPORTDEFINITIONOVERRIDES
+        identifier: "DATAIMPORTDEFINITIONOVERRIDES"
+        description: 'Per-product overrides for import job definitions. Same pattern as DATAEXPORTDEFINITIONOVERRIDES.'
+
+      - name: CREDITREPORTS
+        identifier: "CREDITREPORTS"
+        description: 'Credit reporting data snapshots. Each row represents a credit report line item sent to credit bureaus for a specific obligor-obligation pair.'
+
+      - name: SCRIPTS
+        identifier: "SCRIPTS"
+        description: 'Client-configurable automation scripts scoped to a product. Scripts implement client-specific business logic — payment spreading, interest/late charge assessment, statement generation, calculated fields, and custom workflows. They can be triggered by a schedule, a system event, or run manually as a user action on individual obligations.'
+
+      - name: USERS
+        identifier: "USERS"
+        description: 'Internal system users (loan officers, customer service agents, administrators). Separate from OBLIGORLOGINS which are borrower portal accounts.'
+
+      - name: ROLES
+        identifier: "ROLES"
+        description: 'User role definitions for access control.'
+
+      - name: USERROLES
+        identifier: "USERROLES"
+        description: 'Many-to-many bridge linking users to roles within a client context.'
+
+      - name: CREDITUSERS
+        identifier: "CREDITUSERS"
+        description: 'Bridge linking users to credit reporting access per client.'
+
+      - name: SEGMENTS
+        identifier: "SEGMENTS"
+        description: 'Saved segment definitions (filters) for querying and reporting on obligations. Users can create shared or personal segments.'
+
+      - name: RETURNREASONS
+        identifier: "RETURNREASONS"
+        description: "Lookup table defining bank return reason codes and the system's response to each (fees, retries, letter sending, autopay cancellation)."
+
+      - name: TASKS
+        identifier: "TASKS"
+        description: 'Internal task/to-do records assigned to users for obligation follow-up. Tasks can be created by the system automatically or manually by a user to assign a task to another user.'
+
+      - name: WEBHOOKSUBSCRIPTIONS
+        identifier: "WEBHOOKSUBSCRIPTIONS"
+        description: 'Outbound webhook subscriptions configured per product. When events occur in Link, matching subscriptions receive an HTTP POST.'
+
+      - name: WEBHOOKDELIVERIES
+        identifier: "WEBHOOKDELIVERIES"
+        description: 'Individual webhook delivery attempts. One row per outbound HTTP call.'
+

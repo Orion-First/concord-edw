@@ -1,0 +1,332 @@
+version: 2
+
+sources:
+  - name: ESP
+    description: ESP Data
+    database: RAW
+    schema: ESP
+    tables: 
+      - name: ACCOUNT_ADDRESS
+        identifier: "ACCOUNT_ADDRESS"
+        description: 'Mailing address for an account. One row per account.'
+
+      - name: ACCOUNT_CLASS
+        identifier: "ACCOUNT_CLASS"
+        description: 'Classification codes assigned to an account. Multi-valued (SEQUENCENUMBER).'
+
+      - name: ACCOUNT_EMAIL
+        identifier: "ACCOUNT_EMAIL"
+        description: 'Email addresses on file for an account. Multi-valued.'
+
+      - name: ACCOUNT_PERSONALINFO
+        identifier: "ACCOUNT_PERSONALINFO"
+        description: 'Primary borrower/member personal information. Multi-valued (SEQUENCENUMBER) to support co-borrowers.'
+
+      - name: ACCOUNT_PERSONALINFO_FICOSCORES
+        identifier: "ACCOUNT_PERSONALINFO_FICOSCORES"
+        description: 'Historical FICO score tracking per person on an account.'
+
+      - name: ACCOUNT_PHONE
+        identifier: "ACCOUNT_PHONE"
+        description: 'Phone numbers on file for an account. Multi-valued.'
+
+      - name: ACTIONCODE
+        identifier: "ACTIONCODE"
+        description: 'Actions/tasks assigned to accounts with date ranges (begin, end, review). Used for workflow tracking, follow-ups, and scheduled events.'
+
+      - name: ACTIONCODECLIENTS
+        identifier: "ACTIONCODECLIENTS"
+        description: 'Maps action codes to specific clients — controls which action codes are available per client.'
+
+      - name: ACTIONCODEDESCRIPTIONS
+        identifier: "ACTIONCODEDESCRIPTIONS"
+        description: 'Lookup table for action code definitions. Boolean flags control which fields are required/visible for each code.'
+
+      - name: ACTIONCODE_STATUS
+        identifier: "ACTIONCODE_STATUS"
+        description: 'Status history for actions. Tracks workflow state changes with user and timestamp.'
+
+      - name: ATTRIBUTECODE
+        identifier: "ATTRIBUTECODE"
+        description: 'Tags/flags assigned to accounts. Simpler than action codes — just a code + timestamp, no date ranges.'
+
+      - name: ATTRIBUTECODEDESCRIPTIONS
+        identifier: "ATTRIBUTECODEDESCRIPTIONS"
+        description: 'Lookup table for attribute code definitions with type classification.'
+
+      - name: LOAN_HEADER
+        identifier: "LOAN_HEADER"
+        description: 'Master record for each loan account. Contains setup info, payment configuration, and adjustable rate parameters.'
+
+      - name: LOAN_TERMS
+        identifier: "LOAN_TERMS"
+        description: 'Loan origination/modification terms. Multi-valued (SEQUENCENUMBER) to track term changes over the life of the loan.'
+
+      - name: LOAN_TERMS_IMPOUND
+        identifier: "LOAN_TERMS_IMPOUND"
+        description: 'Impound/escrow components of loan terms (taxes, insurance, HOA, etc.). Sub-values under LOAN_TERMS.'
+
+      - name: LOAN_TRANSACTIONS
+        identifier: "LOAN_TRANSACTIONS"
+        description: 'Complete financial transaction history for loan accounts. Each row is a posting with full running balance snapshot.'
+
+      - name: LOAN_INTERESTRATE
+        identifier: "LOAN_INTERESTRATE"
+        description: 'Interest rate change history for a loan. Tracks rate changes over time (especially for ARMs).'
+
+      - name: LOAN_TRANSCODEDESCRIPTIONS
+        identifier: "LOAN_TRANSCODEDESCRIPTIONS"
+        description: 'Lookup table for loan transaction codes. Includes type classification and flags for cash impact, payment recognition, reconciliation category.'
+
+      - name: LOAN_TRANSDELINQUENCY
+        identifier: "LOAN_TRANSDELINQUENCY"
+        description: 'Delinquency bucket tracking per loan transaction. Records delinquency codes and counts (e.g. 30/60/90 day buckets).'
+
+      - name: LOAN_DISPOSITIONCHANGE
+        identifier: "LOAN_DISPOSITIONCHANGE"
+        description: 'Disposition (status) change history for loan accounts. Audit trail of status transitions.'
+
+      - name: LOAN_COLLECTION
+        identifier: "LOAN_COLLECTION"
+        description: 'Current collection state of a delinquent loan account — state, timezone, letter campaign, priority.'
+
+      - name: LOAN_COLLECTION_EXITCODE
+        identifier: "LOAN_COLLECTION_EXITCODE"
+        description: 'Collection call/contact attempt results. Tracks collector, exit code (outcome), timestamps, and notes.'
+
+      - name: LOAN_COLLECTION_PHONES
+        identifier: "LOAN_COLLECTION_PHONES"
+        description: 'Phone numbers associated with collection campaigns. BAD flag marks known-bad numbers.'
+
+      - name: LOAN_CPA
+        identifier: "LOAN_CPA"
+        description: '"Cost Per Account" or appraisal values tracked over time for a loan. Multi-valued with date and entered-by.'
+
+      - name: LOAN_LENDERCHANGE
+        identifier: "LOAN_LENDERCHANGE"
+        description: 'Lender/investor assignment change history. Tracks when a loan transfers between investors.'
+
+      - name: LOAN_PROJECTLENDER
+        identifier: "LOAN_PROJECTLENDER"
+        description: 'Maps loan projects to their default lender/investor code.'
+
+      - name: LOAN_PROJECTS
+        identifier: "LOAN_PROJECTS"
+        description: 'Loan project configuration. A project is an organizational unit under a group, tied to a client.'
+
+      - name: LOAN_CLIENTCODES
+        identifier: "LOAN_CLIENTCODES"
+        description: 'Maps client IDs to their group/project/lender hierarchy with descriptions.'
+
+      - name: LOAN_SOURCECODEDESCRIPTIONS
+        identifier: "LOAN_SOURCECODEDESCRIPTIONS"
+        description: 'Lookup for transaction source codes (how a transaction originated — manual, batch, autopay, etc.).'
+
+      - name: LOAN_SUBCLASS
+        identifier: "LOAN_SUBCLASS"
+        description: 'Subclass code history for loan accounts. Tracks changes to secondary classification over time.'
+
+      - name: LOAN_UNIT
+        identifier: "LOAN_UNIT"
+        description: 'Unit identifier for loan accounts (e.g. property unit in a multi-unit development).'
+
+      - name: LOAN_WEEK
+        identifier: "LOAN_WEEK"
+        description: 'Week identifier for loan accounts (likely used for biweekly payment scheduling or reporting cycles).'
+
+      - name: BILLING_HEADER
+        identifier: "BILLING_HEADER"
+        description: 'Master record for each billing/dues account. Parallel to LOAN_HEADER but for assessment-based accounts.'
+
+      - name: BILLING_CHARGES
+        identifier: "BILLING_CHARGES"
+        description: 'Individual charges posted to billing accounts (dues, assessments, fees). Each charge has a category, amount, due date, and frequency.'
+
+      - name: BILLING_CHARGES_STATUS
+        identifier: "BILLING_CHARGES_STATUS"
+        description: 'Status history for individual charges — tracks processing state changes.'
+
+      - name: BILLING_TRANSACTIONS
+        identifier: "BILLING_TRANSACTIONS"
+        description: 'Full transaction history for billing accounts. Similar to LOAN_TRANSACTIONS but with billing-specific fields.'
+
+      - name: BILLING_TRANSCATEGORIES
+        identifier: "BILLING_TRANSCATEGORIES"
+        description: 'Category-level breakdown of a billing transaction. Each transaction can affect multiple charge categories (e.g. dues, late charges, finance charges) with separate past-due, current-billed, and applied amounts.'
+
+      - name: BILLING_RATES
+        identifier: "BILLING_RATES"
+        description: 'Payment rate history for billing accounts. Tracks changes to the periodic assessment amount.'
+
+      - name: BILLING_RATE_CATEGORIES
+        identifier: "BILLING_RATE_CATEGORIES"
+        description: 'Category-level rate breakdown. Splits the total periodic rate into categories, each with its own late charge and finance charge configuration.'
+
+      - name: BILLING_TRANSCODEDESCRIPTIONS
+        identifier: "BILLING_TRANSCODEDESCRIPTIONS"
+        description: 'Lookup for billing transaction codes. Rich set of boolean flags for behavior (cash impact, batch posting, aging, invoice generation, etc.).'
+
+      - name: BILLING_CATEGORYDESCRIPTIONS
+        identifier: "BILLING_CATEGORYDESCRIPTIONS"
+        description: 'Lookup for billing charge categories (e.g. maintenance dues, special assessment, insurance).'
+
+      - name: BILLING_TYPEDESCRIPTIONS
+        identifier: "BILLING_TYPEDESCRIPTIONS"
+        description: 'Lookup for billing account types.'
+
+      - name: BILLING_PAYMENTFREQDESCRIPTIONS
+        identifier: "BILLING_PAYMENTFREQDESCRIPTIONS"
+        description: 'Lookup for payment frequency codes (monthly, quarterly, annual, etc.).'
+
+      - name: BILLING_PAYMENTMETHODDESCRIPTIONS
+        identifier: "BILLING_PAYMENTMETHODDESCRIPTIONS"
+        description: 'Lookup for payment method codes (check, ACH, credit card, etc.).'
+
+      - name: BILLING_SOURCECODEDESCRIPTIONS
+        identifier: "BILLING_SOURCECODEDESCRIPTIONS"
+        description: 'Lookup for billing transaction source codes.'
+
+      - name: BILLING_DISPOSITIONCHANGES
+        identifier: "BILLING_DISPOSITIONCHANGES"
+        description: 'Disposition (status) change history for billing accounts.'
+
+      - name: BILLING_COLLECTION
+        identifier: "BILLING_COLLECTION"
+        description: 'Current collection state of a delinquent billing account. Same structure as LOAN_COLLECTION.'
+
+      - name: BILLING_COLLECTION_EXITCODE
+        identifier: "BILLING_COLLECTION_EXITCODE"
+        description: 'Collection contact attempt results for billing accounts.'
+
+      - name: BILLING_COLLECTION_PHONES
+        identifier: "BILLING_COLLECTION_PHONES"
+        description: 'Phone numbers for billing collection campaigns.'
+
+      - name: BILLING_CLIENTCODES
+        identifier: "BILLING_CLIENTCODES"
+        description: 'Maps client IDs to group/project hierarchy for billing. Does not include lender code (billing accounts typically don't have investors).'
+
+      - name: BILLING_PROJECTS
+        identifier: "BILLING_PROJECTS"
+        description: 'Billing project configuration. Similar to LOAN_PROJECTS with additional developer and finance charge description fields.'
+
+      - name: BILLING_PROJECTBUCKETS
+        identifier: "BILLING_PROJECTBUCKETS"
+        description: 'Maps billing projects to aging/delinquency bucket codes.'
+
+      - name: BILLING_SUBCLASS
+        identifier: "BILLING_SUBCLASS"
+        description: 'Subclass code history for billing accounts.'
+
+      - name: BILLING_UNIT
+        identifier: "BILLING_UNIT"
+        description: 'Unit identifier for billing accounts (e.g. timeshare unit/week, HOA unit number).'
+
+      - name: BILLING_WEEK
+        identifier: "BILLING_WEEK"
+        description: 'Week identifier for billing accounts (timeshare week number or reporting period).'
+
+      - name: CUSTODY_HEADER
+        identifier: "CUSTODY_HEADER"
+        description: 'Master record for a custody account (document file). Tracks which box it's in, client/project assignment, and setup info.'
+
+      - name: CUSTODY_TRANSACTIONS
+        identifier: "CUSTODY_TRANSACTIONS"
+        description: 'Activity log for custody events — document receipt, release, transfer, exception tracking.'
+
+      - name: CUSTODY_TRANSDOCUMENTS
+        identifier: "CUSTODY_TRANSDOCUMENTS"
+        description: 'Individual documents within a custody transaction. Tracks specific document types and their disposition within a transaction.'
+
+      - name: CUSTODY_TRANSACTIONCODES
+        identifier: "CUSTODY_TRANSACTIONCODES"
+        description: 'Lookup for custody transaction types. Includes flags for disposition changes, fees, batch posting, and activity restrictions.'
+
+      - name: CUSTODY_DISPOSITIONCODES
+        identifier: "CUSTODY_DISPOSITIONCODES"
+        description: 'Lookup for custody document disposition codes. Boolean flags control behavior (active, exception, label generation, billing code linkage).'
+
+      - name: CUSTODY_DISPOSITIONCHANGE
+        identifier: "CUSTODY_DISPOSITIONCHANGE"
+        description: 'Disposition change history for custody accounts.'
+
+      - name: CUSTODY_LENDERCHANGE
+        identifier: "CUSTODY_LENDERCHANGE"
+        description: 'Lender/investor assignment change history for custody accounts.'
+
+      - name: CUSTODY_CLIENTCODES
+        identifier: "CUSTODY_CLIENTCODES"
+        description: 'Maps client IDs to group/project/lender hierarchy for custody.'
+
+      - name: CUSTODY_PROJECTS
+        identifier: "CUSTODY_PROJECTS"
+        description: 'Custody project configuration. Includes default lender, folder type, and client billing references.'
+
+      - name: CUSTODY_PROJECTBUCKETS
+        identifier: "CUSTODY_PROJECTBUCKETS"
+        description: 'Maps custody projects to document bucket types with date ranges and funding/verification configuration.'
+
+      - name: CUSTODY_PROJECTLENDER
+        identifier: "CUSTODY_PROJECTLENDER"
+        description: 'Maps custody projects to lender/investor entities.'
+
+      - name: CUSTODY_BUCKETTYPES
+        identifier: "CUSTODY_BUCKETTYPES"
+        description: 'Lookup for custody bucket type codes (document categories/stages).'
+
+      - name: CCTRANS
+        identifier: "CCTRANS"
+        description: 'Credit card payment transactions. Records card payment attempts with amount, date, and processing codes.'
+
+      - name: CCTRANS_STATUS
+        identifier: "CCTRANS_STATUS"
+        description: 'Status history for credit card transactions — processing stages (authorized, settled, declined, etc.).'
+
+      - name: AUTOPAYSTATUS
+        identifier: "AUTOPAYSTATUS"
+        description: 'Lookup for autopay enrollment status codes (enrolled, suspended, cancelled, etc.).'
+
+      - name: CLASSCODES
+        identifier: "CLASSCODES"
+        description: 'Lookup for account classification codes (used by ACCOUNT_CLASS).'
+
+      - name: CLIENTS
+        identifier: "CLIENTS"
+        description: 'Client (servicing customer) master list. Each client is an organization whose accounts Equiant services.'
+
+      - name: CLIENTCUSTOMDATA
+        identifier: "CLIENTCUSTOMDATA"
+        description: 'Key-value pairs of client-defined custom data fields on accounts. Flexible storage for client-specific attributes.'
+
+      - name: CLIENTCUSTOMDATACODES
+        identifier: "CLIENTCUSTOMDATACODES"
+        description: 'Lookup for custom data field definitions — code, description, and which subsystem it belongs to.'
+
+      - name: DISPOSITIONCODES
+        identifier: "DISPOSITIONCODES"
+        description: 'Master disposition (account status) code table shared across all subsystems. Boolean flags control behavior per disposition (late charges, coupons, collection, third-party, autopay eligibility, etc.).'
+
+      - name: GROUPS
+        identifier: "GROUPS"
+        description: 'Organizational group lookup. Groups are the top level of the client → group → project hierarchy.'
+
+      - name: LENDERCODES
+        identifier: "LENDERCODES"
+        description: 'Lender/investor code lookup. Identifies the beneficial owner or investor of a loan.'
+
+      - name: NOTES_DETAIL
+        identifier: "NOTES_DETAIL"
+        description: 'Free-text notes on accounts. Includes note type/subtype, entered-by, and CC verification flag.'
+
+      - name: POINTS
+        identifier: "POINTS"
+        description: 'Points/rewards balance tracking per account with change audit trail.'
+
+      - name: PROJECTS
+        identifier: "PROJECTS"
+        description: 'Project lookup table. Projects are the lowest level of the org hierarchy (client → group → project).'
+
+      - name: ZIPCODES
+        identifier: "ZIPCODES"
+        description: 'ZIP code reference table with city, state, country, and decommission flag.'
+
