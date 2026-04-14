@@ -5,7 +5,7 @@ my_snowflake_profile:
       type: snowflake
       account: CONCORD.QGB86541       # e.g., xy12345.us-west-2
       user: BSIMONSEN
-      role: SYSAD,OM
+      role: SYSADMIN
       database: RAW
       warehouse: COMPUTE_WH
       schema: PUBLIC
